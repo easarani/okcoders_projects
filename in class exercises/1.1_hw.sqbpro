@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="C:/Users/erics/OneDrive/Desktop/OKC Coders Fall 2019/company_employees.db" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><current_tab id="3"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="200"/><column_width id="3" width="2565"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><current_table name="employees"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="employees" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk=""><sort/><column_widths/><filter_values/><display_formats/><hidden_columns/><plot_y_axes/></table></browse_table_settings></tab_browse><tab_sql><sql name="SQL 1">/*
+Build a list of the 25 employees that appear first alphabetically by the name
+of their country, and then by their last name. Include the ID, and both names,
+but rename the id field to be called EmployeeID.
+*/
+SELECT  id as EmployeeID, first_name, last_name
+FROM employees
+WHERE country is NOT NULL
+ORDER BY country ASC, last_name ASC
+LIMIT 25
+
+
+/*
+How Many records are there in the set if all NULL values are excluded from the
+total_worth and is_management fields?
+*/
+SELECT count(*)
+FROM employees
+WHERE total_worth is NOT NULL 
+	AND is_management is NOT NULL
+
+/*
+Create a list of the 5 highest worth employees from Canada, from most to least.
+*/
+SELECT first_name, last_name, total_worth
+FROM employees
+WHERE country = &quot;Canada&quot;
+ORDER BY total_worth DESC
+LIMIT 5
+
+/*
+How many countries are represented in the data? What is the ratio of the unique
+number of last names to the unique number of countries? Name the output columns:
+countries, last_names, and ratio.
+*/
+SELECT 
+	count(DISTINCT country) as countries, 
+	count(DISTINCT last_name) as last_names, 
+	(count(DISTINCT last_name)*1.0)/count(DISTINCT country) as ratio
+FROM employees
+
+/*
+How many employees are either from Kenya or have a total worth greater than 47
+but less than 51?
+*/
+SELECT count(*)
+FROM employees
+WHERE country = &quot;Kenya&quot;
+	OR total_worth BETWEEN 47 and 51
+
+/*
+Produce a list of employees by last name, id, and email address only; where
+none are from Kenya or Canada, but all are female managers. Sort the list by
+each person's email address alphabetically.
+*/
+SELECT id, last_name, email
+FROM employees
+WHERE country not IN(&quot;Kenya&quot;,&quot;Canada&quot;)
+	AND gender = &quot;Female&quot;
+	AND is_management = &quot;true&quot;
+ORDER BY email ASC
+
+
+--BONUS-----------------------------------------------------------------------
+/*
+I would like to give a 10% worth raise plus an extra 5 on top to all Canadian
+employees who either have a current worth less than 10, or are not management.
+Please produce a list of all employees meeting that criteria with their id, their
+name, their current worth, and their future worth once they get the raise.
+*/
+SELECT 
+id, first_name, last_name, total_worth as current_worth, 
+((total_worth * 1.10)+5) as future_worth
+FROM employees
+WHERE country = &quot;Canada&quot;
+	AND total_worth is NOT NULL
+	AND (total_worth &lt; 10
+	OR is_management = &quot;false&quot;)
+ORDER BY future_worth DESC
+
+/*
+If I gave a 12% raise, how many new management employees would be in the
+above 50 category?
+*/
+SELECT count(*) as above_fifty
+FROM employees
+WHERE is_management = &quot;true&quot;
+	AND total_worth &lt; 50
+	AND total_worth*1.12 &gt;= 50
+
+
+
+</sql><current_tab id="0"/></tab_sql></sqlb_project>
